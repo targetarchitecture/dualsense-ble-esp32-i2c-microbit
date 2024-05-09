@@ -31,9 +31,33 @@ void performCommand(int howMany) {
   } else if (command.startsWith("RUMBLE")) {
     playDualRumble();  //Perform controller rumble
   } else if (command.startsWith("LED:")) {
-    String strLed = command.substring(3);
-  Serial.println("strLed:" + strLed);
-    setPlayerLEDs(1);  //Turn on the 4 LED. Each bit represents one LED.
+
+    int Led;
+
+    sscanf(command.c_str(), "LED:%d", &Led);
+
+    Serial.print("setPlayerLEDs:");
+    Serial.print(Led);
+    Serial.println("");
+
+    setPlayerLEDs(Led);  //Turn on the 4 LED. Each bit represents one LED.
+
+  } else if (command.startsWith("COLOUR:")) {
+
+    uint8_t r, g, b;
+
+    sscanf(command.c_str(), "COLOUR:%d,%d,%d", &r, &g, &b);
+
+    Serial.print("COLOUR:");
+    Serial.print(r);
+    Serial.print(",");
+    Serial.print(g);
+    Serial.print(",");
+    Serial.print(b);
+    Serial.println("");
+
+    setColourLED(r, g, b);  //Turn on the colour LEDs
+    
   } else {
     requestDataFromMicrobit = command;
     Serial.print("requestDataFromMicrobit:");
