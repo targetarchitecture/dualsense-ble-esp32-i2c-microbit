@@ -1,6 +1,4 @@
-
 ControllerPtr myControllers[BP32_MAX_GAMEPADS];
-
 
 void setup_dualsense() {
   Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
@@ -97,68 +95,6 @@ void dumpGamepad(ControllerPtr ctl) {
   );
 }
 
-//void processGamepad(ControllerPtr ctl) {
-  // There are different ways to query whether a button is pressed.
-  // By query each button individually:
-  //  a(), b(), x(), y(), l1(), etc...
-  // if (ctl->a()) {
-  //   static int colorIdx = 0;
-  //   // Some gamepads like DS4 and DualSense support changing the color LED.
-  //   // It is possible to change it by calling:
-  //   switch (colorIdx % 3) {
-  //     case 0:
-  //       // Red
-  //       ctl->setColorLED(255, 0, 0);
-  //       break;
-  //     case 1:
-  //       // Green
-  //       ctl->setColorLED(0, 255, 0);
-  //       break;
-  //     case 2:
-  //       // Blue
-  //       ctl->setColorLED(0, 0, 255);
-  //       break;
-  //   }
-  //   colorIdx++;
-  // }
-
-  // if (ctl->b()) {
-  //   // Turn on the 4 LED. Each bit represents one LED.
-  //   static int led = 0;
-  //   led++;
-  //   // Some gamepads like the DS3, DualSense, Nintendo Wii, Nintendo Switch
-  //   // support changing the "Player LEDs": those 4 LEDs that usually indicate
-  //   // the "gamepad seat".
-  //   // It is possible to change them by calling:
-  //   ctl->setPlayerLEDs(led & 0x0f);
-  // }
-
-  // if (ctl->x()) {
-  //   // Some gamepads like DS3, DS4, DualSense, Switch, Xbox One S, Stadia support rumble.
-  //   // It is possible to set it by calling:
-  //   // Some controllers have two motors: "strong motor", "weak motor".
-  //   // It is possible to control them independently.
-  //   ctl->playDualRumble(0 /* delayedStartMs */, 250 /* durationMs */, 0x80 /* weakMagnitude */,
-  //                       0x40 /* strongMagnitude */);
-  // }
-
-  // Another way to query controller data is by getting the buttons() function.
-  // See how the different "dump*" functions dump the Controller info.
-  // dumpGamepad(ctl);
-//}
-
-// void processControllers() {
-//   for (auto myController : myControllers) {
-//     if (myController && myController->isConnected() && myController->hasData()) {
-//       if (myController->isGamepad()) {
-//         processGamepad(myController);
-//       } else {
-//         Serial.println("Unsupported controller");
-//       }
-//     }
-//   }
-// }
-
 // DualSense supports changing the colour LED.
 void setColourLED(uint8_t red, uint8_t green, uint8_t blue) {
 
@@ -173,8 +109,6 @@ void setColourLED(uint8_t red, uint8_t green, uint8_t blue) {
   }
 }
 
-
-
 // Turn on the 4 LED. Each bit represents one LED.
 void setPlayerLEDs(int led) {
 
@@ -188,7 +122,6 @@ void setPlayerLEDs(int led) {
     }
   }
 }
-
 
 void playDualRumble() {
 
