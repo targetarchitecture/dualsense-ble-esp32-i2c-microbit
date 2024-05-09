@@ -29,11 +29,10 @@ void loop_dualsense() {
 
   // This call fetches all the controllers' data.
   bool dataUpdated = BP32.update();
-  if (dataUpdated)
-    processControllers();
-
+  if (dataUpdated) {
+    //  processControllers();
+  }
 }
-
 
 // This callback gets called any time a new gamepad is connected.
 // Up to 4 gamepads can be connected at the same time.
@@ -151,9 +150,22 @@ void processControllers() {
   for (auto myController : myControllers) {
     if (myController && myController->isConnected() && myController->hasData()) {
       if (myController->isGamepad()) {
-        processGamepad(myController); 
+        processGamepad(myController);
       } else {
         Serial.println("Unsupported controller");
+      }
+    }
+  }
+}
+
+void performDualRumble() {
+
+  for (auto myController : myControllers) {
+    if (myController && myController->isConnected() ) {
+      if (myController->isGamepad()) {
+        myController->playDualRumble(0 /* delayedStartMs */, 250 /* durationMs */, 0x80 /* weakMagnitude */, 0x40 /* strongMagnitude */);
+      } else {
+        Serial.println("Unsupported controller (performDualRumble)");
       }
     }
   }

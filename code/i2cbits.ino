@@ -2,12 +2,11 @@
 
 void setup_i2c() {
 
-  Wire.begin(121);               // Join I2C bus as the slave with address 1
-  Wire.onReceive(BlinkLED);      // When the data transmition is detected call receiveEvent function
+  Wire.begin(121);           // Join I2C bus as the slave with address 1
+  Wire.onReceive(BlinkLED);  // When the data transmition is detected call receiveEvent function
   Wire.onRequest(SendData);
 
   pinMode(LED_BUILTIN, OUTPUT);  // Sets the DO_Blink as output
-
 }
 
 volatile char requestDataFromMicrobit;
@@ -32,6 +31,8 @@ void BlinkLED(int howMany) {
     digitalWrite(LED_BUILTIN, HIGH);  // Sets the LAD On
   } else if (res[0] == '0') {
     digitalWrite(LED_BUILTIN, LOW);  // Sets the LAD Off
+  } else if (res[0] == 'R') {
+    performDualRumble(); //Perform controller rumble
   } else {
     requestDataFromMicrobit = res[0];
     Serial.print("requestDataFromMicrobit:");
@@ -45,5 +46,5 @@ void SendData() {
   int j = snprintf(txt, sizeof txt, "You want: %c\n", requestDataFromMicrobit);
 
   Serial.println(txt);
-  Wire.write(txt);  
+  Wire.write(txt);
 }
