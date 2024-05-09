@@ -1,9 +1,6 @@
 #include <Bluepad32.h>
+#include <Wire.h>
 
-
-ControllerPtr myControllers[BP32_MAX_GAMEPADS];
-
-/*Setup loop************************************************************************************/
 void setup() {
   
   Serial.begin(115200);
@@ -12,16 +9,12 @@ void setup() {
 
   setup_dualsense();
 
-
 }
 
-/*Main loop**************************************************************************************/
 void loop() {
 
   // This call fetches all the controllers' data.
-  bool dataUpdated = BP32.update();
-  if (dataUpdated)
-    processControllers();
+  loop_dualsense();
 
   delay(100);
 }
