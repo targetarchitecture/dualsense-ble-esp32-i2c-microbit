@@ -2,48 +2,49 @@
 
 void setup_i2c() {
 
-  Wire.begin(121);           // Join I2C bus as the slave with address 1
-  Wire.onReceive(BlinkLED);  // When the data transmition is detected call receiveEvent function
+  Wire.begin(121);                 // Join I2C bus as the slave with address 1
+  Wire.onReceive(performCommand);  // When the data transmition is detected call receiveEvent function
   Wire.onRequest(SendData);
 
   pinMode(LED_BUILTIN, OUTPUT);  // Sets the DO_Blink as output
 }
 
-volatile char requestDataFromMicrobit;
+String requestDataFromMicrobit;
 
 /*Function/Event call****************************************************************************/
-void BlinkLED(int howMany) {
-  // byte I2C_OnOff = Wire.read();  // Reads the data sent via I2C
+void performCommand(int howMany) {
 
-  int i = 0;
-  char res[howMany] = "";
+  String command;
 
   while (Wire.available()) {
     char c = Wire.read();
     Serial.print(c);
-    res[i] = c;
-    i++;
+    command.concat(c);
   }
 
-  Serial.println("BlinkLED");
+  Serial.println("performCommand");
 
-  if (res[0] == '1') {
+  if (command.startsWith("TEST:1")) {
     digitalWrite(LED_BUILTIN, HIGH);  // Sets the LAD On
-  } else if (res[0] == '0') {
+  } else if (command.startsWith("TEST:0")) {
     digitalWrite(LED_BUILTIN, LOW);  // Sets the LAD Off
-  } else if (res[0] == 'R') {
-    performDualRumble(); //Perform controller rumble
+  } else if (command.startsWith("RUMBLE")) {
+    playDualRumble();  //Perform controller rumble
+  } else if (command.startsWith("LED:")) {
+    String strLed = command.substring(3);
+  Serial.println("strLed:" + strLed);
+    setPlayerLEDs(1);  //Turn on the 4 LED. Each bit represents one LED.
   } else {
-    requestDataFromMicrobit = res[0];
+    requestDataFromMicrobit = command;
     Serial.print("requestDataFromMicrobit:");
-    Serial.println(requestDataFromMicrobit);
+    Serial.println(command);
   }
 }
 
 void SendData() {
   char txt[32];  // respond with message of 32 bytes (the max wire.h supports)
 
-  int j = snprintf(txt, sizeof txt, "You want: %c\n", requestDataFromMicrobit);
+  int j = snprintf(txt, sizeof txt, "You want: %s\n", requestDataFromMicrobit);
 
   Serial.println(txt);
   Wire.write(txt);

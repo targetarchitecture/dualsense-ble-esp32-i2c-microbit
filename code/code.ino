@@ -16,6 +16,6 @@ void loop() {
   // This call fetches all the controllers' data.
   loop_dualsense();
 
-  delay(100);
+  delay(50);
 }
 

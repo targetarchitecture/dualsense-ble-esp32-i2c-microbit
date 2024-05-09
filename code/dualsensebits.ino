@@ -121,44 +121,59 @@ void processGamepad(ControllerPtr ctl) {
     colorIdx++;
   }
 
-  if (ctl->b()) {
-    // Turn on the 4 LED. Each bit represents one LED.
-    static int led = 0;
-    led++;
-    // Some gamepads like the DS3, DualSense, Nintendo Wii, Nintendo Switch
-    // support changing the "Player LEDs": those 4 LEDs that usually indicate
-    // the "gamepad seat".
-    // It is possible to change them by calling:
-    ctl->setPlayerLEDs(led & 0x0f);
-  }
+  // if (ctl->b()) {
+  //   // Turn on the 4 LED. Each bit represents one LED.
+  //   static int led = 0;
+  //   led++;
+  //   // Some gamepads like the DS3, DualSense, Nintendo Wii, Nintendo Switch
+  //   // support changing the "Player LEDs": those 4 LEDs that usually indicate
+  //   // the "gamepad seat".
+  //   // It is possible to change them by calling:
+  //   ctl->setPlayerLEDs(led & 0x0f);
+  // }
 
-  if (ctl->x()) {
-    // Some gamepads like DS3, DS4, DualSense, Switch, Xbox One S, Stadia support rumble.
-    // It is possible to set it by calling:
-    // Some controllers have two motors: "strong motor", "weak motor".
-    // It is possible to control them independently.
-    ctl->playDualRumble(0 /* delayedStartMs */, 250 /* durationMs */, 0x80 /* weakMagnitude */,
-                        0x40 /* strongMagnitude */);
-  }
+  // if (ctl->x()) {
+  //   // Some gamepads like DS3, DS4, DualSense, Switch, Xbox One S, Stadia support rumble.
+  //   // It is possible to set it by calling:
+  //   // Some controllers have two motors: "strong motor", "weak motor".
+  //   // It is possible to control them independently.
+  //   ctl->playDualRumble(0 /* delayedStartMs */, 250 /* durationMs */, 0x80 /* weakMagnitude */,
+  //                       0x40 /* strongMagnitude */);
+  // }
 
   // Another way to query controller data is by getting the buttons() function.
   // See how the different "dump*" functions dump the Controller info.
-  dumpGamepad(ctl);
+ // dumpGamepad(ctl);
 }
 
-void processControllers() {
-  for (auto myController : myControllers) {
-    if (myController && myController->isConnected() && myController->hasData()) {
+// void processControllers() {
+//   for (auto myController : myControllers) {
+//     if (myController && myController->isConnected() && myController->hasData()) {
+//       if (myController->isGamepad()) {
+//         processGamepad(myController);
+//       } else {
+//         Serial.println("Unsupported controller");
+//       }
+//     }
+//   }
+// }
+
+// Turn on the 4 LED. Each bit represents one LED.
+void setPlayerLEDs(int led) {
+
+ for (auto myController : myControllers) {
+    if (myController && myController->isConnected() ) {
       if (myController->isGamepad()) {
-        processGamepad(myController);
+        myController->setPlayerLEDs(led & 0x0f);
       } else {
-        Serial.println("Unsupported controller");
+        Serial.println("Unsupported controller (performDualRumble)");
       }
     }
   }
 }
 
-void performDualRumble() {
+
+void playDualRumble() {
 
   for (auto myController : myControllers) {
     if (myController && myController->isConnected() ) {
