@@ -2,8 +2,8 @@
 
 void setup_i2c() {
 
-  Wire.begin(121);                 // Join I2C bus as the slave with address 1
-  Wire.onReceive(performCommand);  // When the data transmition is detected call receiveEvent function
+  Wire.begin(121);                  // Join I2C bus as the slave with address 1
+  Wire.onReceive(ReceivedCommand);  // When the data transmition is detected call receiveEvent function
   Wire.onRequest(SendData);
 
   pinMode(LED_BUILTIN, OUTPUT);  // Sets the DO_Blink as output
@@ -12,11 +12,11 @@ void setup_i2c() {
 String requestDataFromMicrobit;
 
 /*Function/Event call****************************************************************************/
-void performCommand(int howMany) {
+void ReceivedCommand(int howMany) {
 
   String command;
 
-  Serial.print("performCommand:");
+  Serial.print("ReceivedCommand:");
 
   while (Wire.available()) {
     char c = Wire.read();
@@ -64,6 +64,18 @@ void performCommand(int howMany) {
     requestDataFromMicrobit = command;
     Serial.print("requestDataFromMicrobit:");
     Serial.println(command);
+
+    // for (auto myController : myControllers) {
+    //   if (myController && myController->isConnected()) {
+    //     if (myController->isGamepad()) {
+    //       char txt[32];
+
+    //       snprintf(txt, sizeof txt, "%i,%i\n", myController->axisX(), myController->axisY());
+
+    //       Serial.println(txt);
+    //     }
+    //   }
+    // }
   }
 }
 
@@ -77,36 +89,33 @@ void SendData() {
 
         if (requestDataFromMicrobit.startsWith("DPAD")) {
 
-          // if (dpad == DPAD_UP) {
-          //    // up is pressed down
-          // }
+          bool DPAD_UP_PRESSED = 0;
+          bool DPAD_DOWN_PRESSED = 0;
+          bool DPAD_RIGHT_PRESSED = 0;
+          bool DPAD_LEFT_PRESSED = 0;
 
-          snprintf(txt, sizeof txt, "%d,%d,%d,%d\n", myController->dpad() << 0, myController->dpad() << 1, myController->dpad() << 2, myController->dpad() << 3);
+          if (myController->dpad() == DPAD_UP) { DPAD_UP_PRESSED = true; }
+          if (myController->dpad() == DPAD_DOWN) { DPAD_DOWN_PRESSED = true; }
+          if (myController->dpad() == DPAD_RIGHT) { DPAD_RIGHT_PRESSED = true; }
+          if (myController->dpad() == DPAD_LEFT) { DPAD_LEFT_PRESSED = true; }
+
+          snprintf(txt, sizeof txt, ">>%d,%d,%d,%d\n", DPAD_UP_PRESSED, DPAD_DOWN_PRESSED, DPAD_RIGHT_PRESSED, DPAD_LEFT_PRESSED);
 
         } else if (requestDataFromMicrobit.startsWith("BUTTONS")) {
           snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", myController->a(), myController->b(), myController->x(), myController->y(),
                    myController->l1(), myController->l2(), myController->r1(), myController->r2(), myController->thumbL(), myController->thumbR(),
                    myController->miscSystem(), myController->miscSelect(), myController->miscStart(), myController->miscCapture());
+
         } else if (requestDataFromMicrobit.startsWith("AXISL")) {
           snprintf(txt, sizeof txt, "%i,%i\n", myController->axisX(), myController->axisY());
         } else if (requestDataFromMicrobit.startsWith("AXISR")) {
           snprintf(txt, sizeof txt, "%i,%i\n", myController->axisRX(), myController->axisRY());
-        } else if (requestDataFromMicrobit.startsWith("BRAKE")) {
-          snprintf(txt, sizeof txt, "%i\n", myController->brake());
-        } else if (requestDataFromMicrobit.startsWith("THROTTLE")) {
-          snprintf(txt, sizeof txt, "%i\n", myController->throttle());
+        } else if (requestDataFromMicrobit.startsWith("TRIGGERS")) {
+          snprintf(txt, sizeof txt, "%i,%i\n", myController->brake(), myController->throttle());
         } else if (requestDataFromMicrobit.startsWith("GYRO")) {
           snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->gyroX(), myController->gyroY(), myController->gyroZ());
         } else if (requestDataFromMicrobit.startsWith("ACCEL")) {
           snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
-          // } else if (requestDataFromMicrobit.startsWith("ABUTTON")) {
-          //   snprintf(txt, sizeof txt, "%d\n", myController->a());
-          // } else if (requestDataFromMicrobit.startsWith("BBUTTON")) {
-          //   snprintf(txt, sizeof txt, "%d\n", myController->b());
-          // } else if (requestDataFromMicrobit.startsWith("XBUTTON")) {
-          //   snprintf(txt, sizeof txt, "%d\n", myController->x());
-          // } else if (requestDataFromMicrobit.startsWith("YBUTTON")) {
-          //   snprintf(txt, sizeof txt, "%d\n", myController->y());
         }
 
         Serial.println(txt);
