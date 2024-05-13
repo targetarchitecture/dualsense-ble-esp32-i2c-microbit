@@ -1,9 +1,9 @@
 ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 
 void setup_dualsense() {
-  Serial.printf("Firmware: %s\n", BP32.firmwareVersion());
+  Log.traceln("Firmware: %s", BP32.firmwareVersion());
   const uint8_t* addr = BP32.localBdAddress();
-  Serial.printf("BD Addr: %2X:%2X:%2X:%2X:%2X:%2X\n", addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
+  Log.traceln("BD Addr: %2X:%2X:%2X:%2X:%2X:%2X", addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
 
   // Setup the Bluepad32 callbacks
   BP32.setup(&onConnectedController, &onDisconnectedController);
@@ -27,10 +27,10 @@ bool loop_dualsense() {
 
   // This call fetches all the controllers' data.
   bool dataUpdated = BP32.update();
- // if (dataUpdated) {
-    //  processControllers();
- // }
- return dataUpdated;
+  // if (dataUpdated) {
+  //  processControllers();
+  // }
+  return dataUpdated;
 }
 
 // This callback gets called any time a new gamepad is connected.
@@ -39,19 +39,18 @@ void onConnectedController(ControllerPtr ctl) {
   bool foundEmptySlot = false;
   for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
     if (myControllers[i] == nullptr) {
-      Serial.printf("CALLBACK: Controller is connected, index=%d\n", i);
+      Log.traceln("CALLBACK: Controller is connected, index=%d", i);
       // Additionally, you can get certain gamepad properties like:
       // Model, VID, PID, BTAddr, flags, etc.
       ControllerProperties properties = ctl->getProperties();
-      Serial.printf("Controller model: %s, VID=0x%04x, PID=0x%04x\n", ctl->getModelName().c_str(), properties.vendor_id,
-                    properties.product_id);
+      Log.traceln("Controller model: %s, VID=0x%04x, PID=0x%04x", ctl->getModelName().c_str(), properties.vendor_id, properties.product_id);
       myControllers[i] = ctl;
       foundEmptySlot = true;
       break;
     }
   }
   if (!foundEmptySlot) {
-    Serial.println("CALLBACK: Controller connected, but could not found empty slot");
+    Log.traceln("CALLBACK: Controller connected, but could not found empty slot");
   }
 }
 
@@ -60,7 +59,7 @@ void onDisconnectedController(ControllerPtr ctl) {
 
   for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
     if (myControllers[i] == ctl) {
-      Serial.printf("CALLBACK: Controller disconnected from index=%d\n", i);
+      Log.traceln("CALLBACK: Controller disconnected from index=%d\n", i);
       myControllers[i] = nullptr;
       foundController = true;
       break;
@@ -68,14 +67,14 @@ void onDisconnectedController(ControllerPtr ctl) {
   }
 
   if (!foundController) {
-    Serial.println("CALLBACK: Controller disconnected, but not found in myControllers");
+    Log.traceln("CALLBACK: Controller disconnected, but not found in myControllers");
   }
 }
 
 void dumpGamepad(ControllerPtr ctl) {
-  Serial.printf(
+  Log.traceln(
     "idx=%d, dpad: 0x%02x, buttons: 0x%04x, axis L: %4d, %4d, axis R: %4d, %4d, brake: %4d, throttle: %4d, "
-    "misc: 0x%02x, gyro x:%6d y:%6d z:%6d, accel x:%6d y:%6d z:%6d\n",
+    "misc: 0x%02x, gyro x:%6d y:%6d z:%6d, accel x:%6d y:%6d z:%6d",
     ctl->index(),        // Controller Index
     ctl->dpad(),         // D-pad
     ctl->buttons(),      // bitmask of pressed buttons
@@ -103,7 +102,7 @@ void setColourLED(uint8_t red, uint8_t green, uint8_t blue) {
       if (myController->isGamepad()) {
         myController->setColorLED(red, green, blue);
       } else {
-        Serial.println("Unsupported controller (setColourLED)");
+        Log.traceln("Unsupported controller (setColourLED)");
       }
     }
   }
@@ -117,7 +116,7 @@ void setPlayerLEDs(int led) {
       if (myController->isGamepad()) {
         myController->setPlayerLEDs(led & 0x0f);
       } else {
-        Serial.println("Unsupported controller (setPlayerLEDs)");
+        Log.traceln("Unsupported controller (setPlayerLEDs)");
       }
     }
   }
@@ -130,7 +129,7 @@ void playDualRumble() {
       if (myController->isGamepad()) {
         myController->playDualRumble(0 /* delayedStartMs */, 250 /* durationMs */, 0x80 /* weakMagnitude */, 0x40 /* strongMagnitude */);
       } else {
-        Serial.println("Unsupported controller (performDualRumble)");
+        Log.traceln("Unsupported controller (performDualRumble)");
       }
     }
   }

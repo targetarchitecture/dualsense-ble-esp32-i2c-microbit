@@ -16,15 +16,15 @@ void ReceivedCommand(int howMany) {
 
   String command;
 
-  Serial.print("ReceivedCommand:");
+  Log.trace("ReceivedCommand:");
 
   while (Wire.available()) {
     char c = Wire.read();
-    Serial.print(c);
+    //Log.trace(c);
     command.concat(c);
   }
 
-  Serial.println("");
+  //Log.traceln(command.c_str());
 
   if (command.startsWith("TEST:1")) {
     digitalWrite(LED_BUILTIN, HIGH);  // Sets the LAD On
@@ -38,9 +38,7 @@ void ReceivedCommand(int howMany) {
 
     sscanf(command.c_str(), "LED:%d", &Led);
 
-    Serial.print("setPlayerLEDs:");
-    Serial.print(Led);
-    Serial.println("");
+    Log.traceln("setPlayerLEDs:%d", Led);
 
     setPlayerLEDs(Led);  //Turn on the 4 LED. Each bit represents one LED.
 
@@ -50,32 +48,13 @@ void ReceivedCommand(int howMany) {
 
     sscanf(command.c_str(), "COLOUR:%u,%u,%u", &r, &g, &b);
 
-    Serial.print("COLOUR:");
-    Serial.print(r);
-    Serial.print(",");
-    Serial.print(g);
-    Serial.print(",");
-    Serial.print(b);
-    Serial.println("");
+    Log.traceln("COLOUR:%u,%u,%u", r, g, b);
 
     setColourLED(r, g, b);  //Turn on the colour LEDs
 
   } else {
     requestDataFromMicrobit = command;
-    Serial.print("requestDataFromMicrobit:");
-    Serial.println(command);
-
-    // for (auto myController : myControllers) {
-    //   if (myController && myController->isConnected()) {
-    //     if (myController->isGamepad()) {
-    //       char txt[32];
-
-    //       snprintf(txt, sizeof txt, "%i,%i\n", myController->axisX(), myController->axisY());
-
-    //       Serial.println(txt);
-    //     }
-    //   }
-    // }
+    Log.traceln("requestDataFromMicrobit:%s", command);
   }
 }
 
@@ -99,7 +78,7 @@ void SendData() {
           if (myController->dpad() == DPAD_RIGHT) { DPAD_RIGHT_PRESSED = true; }
           if (myController->dpad() == DPAD_LEFT) { DPAD_LEFT_PRESSED = true; }
 
-          snprintf(txt, sizeof txt, ">>%d,%d,%d,%d\n", DPAD_UP_PRESSED, DPAD_DOWN_PRESSED, DPAD_RIGHT_PRESSED, DPAD_LEFT_PRESSED);
+          snprintf(txt, sizeof txt, "%d,%d,%d,%d\n", DPAD_UP_PRESSED, DPAD_DOWN_PRESSED, DPAD_RIGHT_PRESSED, DPAD_LEFT_PRESSED);
 
         } else if (requestDataFromMicrobit.startsWith("BUTTONS")) {
           snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", myController->a(), myController->b(), myController->x(), myController->y(),
@@ -118,7 +97,7 @@ void SendData() {
           snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
         }
 
-        Serial.println(txt);
+        Log.traceln(txt);
         Wire.write(txt);
       }
     }
