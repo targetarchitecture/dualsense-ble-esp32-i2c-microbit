@@ -71,33 +71,47 @@ void SendData() {
 
   char txt[32];  // respond with message of 32 bytes (the max wire.h supports)
 
-  auto myController = myControllers[0];
+  for (auto myController : myControllers) {
+    if (myController && myController->isConnected()) {
+      if (myController->isGamepad()) {
 
-  if (myController && myController->isConnected() && myController->isGamepad()) {
+        if (requestDataFromMicrobit.startsWith("DPAD")) {
 
-    if (requestDataFromMicrobit.startsWith("DPAD")) {
-      snprintf(txt, sizeof txt, "%u\n", myController->dpad());
-    } else if (requestDataFromMicrobit.startsWith("BUTTONS")) {
-      snprintf(txt, sizeof txt, "%u\n", myController->buttons());
-    } else if (requestDataFromMicrobit.startsWith("AXISL")) {
-      snprintf(txt, sizeof txt, "%i,%i\n", myController->axisX(), myController->axisY());
-    } else if (requestDataFromMicrobit.startsWith("AXISR")) {
-      snprintf(txt, sizeof txt, "%i,%i\n", myController->axisRX(), myController->axisRY());
-    } else if (requestDataFromMicrobit.startsWith("BRAKE")) {
-      snprintf(txt, sizeof txt, "%i\n", myController->brake());
-    } else if (requestDataFromMicrobit.startsWith("THROTTLE")) {
-      snprintf(txt, sizeof txt, "%i\n", myController->throttle());
-    } else if (requestDataFromMicrobit.startsWith("MISCBUTTONS")) {
-      snprintf(txt, sizeof txt, "%u\n", myController->miscButtons());
-    } else if (requestDataFromMicrobit.startsWith("GYRO")) {
-      snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->gyroX(), myController->gyroY(), myController->gyroZ());
-    } else if (requestDataFromMicrobit.startsWith("ACCEL")) {
-      snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
+          // if (dpad == DPAD_UP) {
+          //    // up is pressed down
+          // }
+
+          snprintf(txt, sizeof txt, "%d,%d,%d,%d\n", myController->dpad() << 0, myController->dpad() << 1, myController->dpad() << 2, myController->dpad() << 3);
+
+        } else if (requestDataFromMicrobit.startsWith("BUTTONS")) {
+          snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", myController->a(), myController->b(), myController->x(), myController->y(),
+                   myController->l1(), myController->l2(), myController->r1(), myController->r2(), myController->thumbL(), myController->thumbR(),
+                   myController->miscSystem(), myController->miscSelect(), myController->miscStart(), myController->miscCapture());
+        } else if (requestDataFromMicrobit.startsWith("AXISL")) {
+          snprintf(txt, sizeof txt, "%i,%i\n", myController->axisX(), myController->axisY());
+        } else if (requestDataFromMicrobit.startsWith("AXISR")) {
+          snprintf(txt, sizeof txt, "%i,%i\n", myController->axisRX(), myController->axisRY());
+        } else if (requestDataFromMicrobit.startsWith("BRAKE")) {
+          snprintf(txt, sizeof txt, "%i\n", myController->brake());
+        } else if (requestDataFromMicrobit.startsWith("THROTTLE")) {
+          snprintf(txt, sizeof txt, "%i\n", myController->throttle());
+        } else if (requestDataFromMicrobit.startsWith("GYRO")) {
+          snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->gyroX(), myController->gyroY(), myController->gyroZ());
+        } else if (requestDataFromMicrobit.startsWith("ACCEL")) {
+          snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
+          // } else if (requestDataFromMicrobit.startsWith("ABUTTON")) {
+          //   snprintf(txt, sizeof txt, "%d\n", myController->a());
+          // } else if (requestDataFromMicrobit.startsWith("BBUTTON")) {
+          //   snprintf(txt, sizeof txt, "%d\n", myController->b());
+          // } else if (requestDataFromMicrobit.startsWith("XBUTTON")) {
+          //   snprintf(txt, sizeof txt, "%d\n", myController->x());
+          // } else if (requestDataFromMicrobit.startsWith("YBUTTON")) {
+          //   snprintf(txt, sizeof txt, "%d\n", myController->y());
+        }
+
+        Serial.println(txt);
+        Wire.write(txt);
+      }
     }
-  } else {
-    Serial.println("SendData: No dual sense controller connected");
   }
-
-  Serial.println(txt);
-  Wire.write(txt);
 }
