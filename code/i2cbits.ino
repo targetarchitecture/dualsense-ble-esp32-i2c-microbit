@@ -3,7 +3,7 @@
 void setup_i2c() {
 
   Wire.begin(121);                  // Join I2C bus as the slave with address 1
-  Wire.onReceive(ReceivedCommand);  // When the data transmition is detected call receiveEvent function
+  Wire.onReceive(ReceivedCommand);  // When the data transmission is detected call receiveEvent function
   Wire.onRequest(SendData);
 
   pinMode(LED_BUILTIN, OUTPUT);  // Sets the DO_Blink as output
@@ -16,7 +16,7 @@ void ReceivedCommand(int howMany) {
 
   String command;
 
-  Log.trace("ReceivedCommand:");
+  //Log.trace("ReceivedCommand:");
 
   while (Wire.available()) {
     char c = Wire.read();
@@ -24,7 +24,7 @@ void ReceivedCommand(int howMany) {
     command.concat(c);
   }
 
-  //Log.traceln(command.c_str());
+ // Log.traceln(command.c_str());
 
   if (command.startsWith("TEST:1")) {
     digitalWrite(LED_BUILTIN, HIGH);  // Sets the LAD On
@@ -69,21 +69,45 @@ void SendData() {
         if (requestDataFromMicrobit.startsWith("DPAD")) {
 
           bool DPAD_UP_PRESSED = 0;
-          bool DPAD_DOWN_PRESSED = 0;
+          bool DPAD_UP_RIGHT_PRESSED = 0;
           bool DPAD_RIGHT_PRESSED = 0;
+          bool DPAD_DOWN_RIGHT_PRESSED = 0;
+          bool DPAD_DOWN_PRESSED = 0;
+          bool DPAD_DOWN_LEFT_PRESSED = 0;
           bool DPAD_LEFT_PRESSED = 0;
+          bool DPAD_UP_LEFT_PRESSED = 0;
 
           if (myController->dpad() == DPAD_UP) { DPAD_UP_PRESSED = true; }
-          if (myController->dpad() == DPAD_DOWN) { DPAD_DOWN_PRESSED = true; }
+          if (myController->dpad() == DPAD_UP + DPAD_RIGHT) { DPAD_UP_RIGHT_PRESSED = true; }
           if (myController->dpad() == DPAD_RIGHT) { DPAD_RIGHT_PRESSED = true; }
+          if (myController->dpad() == DPAD_DOWN + DPAD_RIGHT) { DPAD_DOWN_RIGHT_PRESSED = true; }
+          if (myController->dpad() == DPAD_DOWN) { DPAD_DOWN_PRESSED = true; }
+          if (myController->dpad() == DPAD_DOWN + DPAD_LEFT) { DPAD_DOWN_LEFT_PRESSED = true; }
           if (myController->dpad() == DPAD_LEFT) { DPAD_LEFT_PRESSED = true; }
+          if (myController->dpad() == DPAD_UP + DPAD_LEFT) { DPAD_UP_LEFT_PRESSED = true; }
 
-          snprintf(txt, sizeof txt, "%d,%d,%d,%d\n", DPAD_UP_PRESSED, DPAD_DOWN_PRESSED, DPAD_RIGHT_PRESSED, DPAD_LEFT_PRESSED);
+          snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d\n",
+                   DPAD_UP_PRESSED,
+                   DPAD_UP_RIGHT_PRESSED,
+                   DPAD_RIGHT_PRESSED,
+                   DPAD_DOWN_RIGHT_PRESSED,
+                   DPAD_DOWN_PRESSED,
+                   DPAD_DOWN_LEFT_PRESSED,
+                   DPAD_LEFT_PRESSED,
+                   DPAD_UP_LEFT_PRESSED);
 
         } else if (requestDataFromMicrobit.startsWith("BUTTONS")) {
-          snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", myController->a(), myController->b(), myController->x(), myController->y(),
-                   myController->l1(), myController->l2(), myController->r1(), myController->r2(), myController->thumbL(), myController->thumbR(),
-                   myController->miscSystem(), myController->miscSelect(), myController->miscStart(), myController->miscCapture());
+          snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+                   myController->a(),
+                   myController->b(),
+                   myController->x(),
+                   myController->y(),
+                   myController->l1(),
+                   myController->l2(),
+                   myController->r1(),
+                   myController->r2(),
+                   myController->thumbL(),
+                   myController->thumbR());
 
         } else if (requestDataFromMicrobit.startsWith("AXISL")) {
           snprintf(txt, sizeof txt, "%i,%i\n", myController->axisX(), myController->axisY());
@@ -97,7 +121,7 @@ void SendData() {
           snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
         }
 
-        Log.traceln(txt);
+        Log.trace("sendData:%s",txt);
         Wire.write(txt);
       }
     }

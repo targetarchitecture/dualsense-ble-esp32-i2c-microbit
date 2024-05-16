@@ -7,7 +7,9 @@ void setup() {
   Serial.begin(115200);
 
   //LOG_LEVEL_VERBOSE
-  Log.begin(LOG_LEVEL_SILENT, &Serial);
+  //LOG_LEVEL_SILENT
+  //LOG_LEVEL_TRACE
+  Log.begin( LOG_LEVEL_TRACE, &Serial);
 
   setup_i2c();
 
@@ -19,5 +21,5 @@ void loop() {
   // This call fetches all the controllers' data.
   loop_dualsense();
 
-  delay(50);
+  delay(10);
 }
