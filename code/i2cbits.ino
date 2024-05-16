@@ -9,7 +9,7 @@ void setup_i2c() {
   pinMode(LED_BUILTIN, OUTPUT);  // Sets the DO_Blink as output
 }
 
-String requestDataFromMicrobit;
+//String requestDataFromMicrobit;
 
 /*Function/Event call****************************************************************************/
 void ReceivedCommand(int howMany) {
@@ -52,11 +52,14 @@ void ReceivedCommand(int howMany) {
 
     setColourLED(r, g, b);  //Turn on the colour LEDs
 
-  } else {
-    requestDataFromMicrobit = command;
-    Log.traceln("requestDataFromMicrobit:%s", command);
-  }
+  } 
+  //else {
+  //   requestDataFromMicrobit = command;
+  //   Log.traceln("requestDataFromMicrobit:%s", command);
+  // }
 }
+
+int whichDataToSend=0;
 
 void SendData() {
 
@@ -66,7 +69,7 @@ void SendData() {
     if (myController && myController->isConnected()) {
       if (myController->isGamepad()) {
 
-        if (requestDataFromMicrobit.startsWith("DPAD")) {
+        if (whichDataToSend == 0) {
 
           bool DPAD_UP_PRESSED = 0;
           bool DPAD_UP_RIGHT_PRESSED = 0;
@@ -86,7 +89,7 @@ void SendData() {
           if (myController->dpad() == DPAD_LEFT) { DPAD_LEFT_PRESSED = true; }
           if (myController->dpad() == DPAD_UP + DPAD_LEFT) { DPAD_UP_LEFT_PRESSED = true; }
 
-          snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d\n",
+          snprintf(txt, sizeof txt, "DPAD,%d,%d,%d,%d,%d,%d,%d,%d\n",
                    DPAD_UP_PRESSED,
                    DPAD_UP_RIGHT_PRESSED,
                    DPAD_RIGHT_PRESSED,
@@ -96,8 +99,8 @@ void SendData() {
                    DPAD_LEFT_PRESSED,
                    DPAD_UP_LEFT_PRESSED);
 
-        } else if (requestDataFromMicrobit.startsWith("BUTTONS")) {
-          snprintf(txt, sizeof txt, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+        } else if (whichDataToSend == 1) {
+          snprintf(txt, sizeof txt, "BUTTONS,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
                    myController->a(),
                    myController->b(),
                    myController->x(),
@@ -109,20 +112,26 @@ void SendData() {
                    myController->thumbL(),
                    myController->thumbR());
 
-        } else if (requestDataFromMicrobit.startsWith("AXISL")) {
-          snprintf(txt, sizeof txt, "%i,%i\n", myController->axisX(), myController->axisY());
-        } else if (requestDataFromMicrobit.startsWith("AXISR")) {
-          snprintf(txt, sizeof txt, "%i,%i\n", myController->axisRX(), myController->axisRY());
-        } else if (requestDataFromMicrobit.startsWith("TRIGGERS")) {
-          snprintf(txt, sizeof txt, "%i,%i\n", myController->brake(), myController->throttle());
-        } else if (requestDataFromMicrobit.startsWith("GYRO")) {
-          snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->gyroX(), myController->gyroY(), myController->gyroZ());
-        } else if (requestDataFromMicrobit.startsWith("ACCEL")) {
-          snprintf(txt, sizeof txt, "%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
+        } else if (whichDataToSend == 2) {
+          snprintf(txt, sizeof txt, "AXISL,%i,%i\n", myController->axisX(), myController->axisY());
+        } else if (whichDataToSend == 3) {
+          snprintf(txt, sizeof txt, "AXISR,%i,%i\n", myController->axisRX(), myController->axisRY());
+        } else if (whichDataToSend == 4) {
+          snprintf(txt, sizeof txt, "TRIGGERS,%i,%i\n", myController->brake(), myController->throttle());
+        } else if (whichDataToSend == 5) {
+          snprintf(txt, sizeof txt, "GYRO,%i,%i,%i\n", myController->gyroX(), myController->gyroY(), myController->gyroZ());
+        } else if (whichDataToSend == 6) {
+          snprintf(txt, sizeof txt, "ACCEL,%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
         }
 
         Log.trace("sendData:%s",txt);
         Wire.write(txt);
+
+        whichDataToSend++;
+        
+        if (whichDataToSend > 6){
+          whichDataToSend=0;
+        }
       }
     }
   }
