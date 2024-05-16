@@ -1,12 +1,7 @@
-
-
 void setup_i2c() {
-
   Wire.begin(121);                  // Join I2C bus as the slave with address 1
   Wire.onReceive(ReceivedCommand);  // When the data transmission is detected call receiveEvent function
   Wire.onRequest(SendData);
-
-  pinMode(LED_BUILTIN, OUTPUT);  // Sets the DO_Blink as output
 }
 
 //String requestDataFromMicrobit;
@@ -16,21 +11,16 @@ void ReceivedCommand(int howMany) {
 
   String command;
 
-  //Log.trace("ReceivedCommand:");
+  Log.trace("ReceivedCommand:");
 
   while (Wire.available()) {
     char c = Wire.read();
-    //Log.trace(c);
     command.concat(c);
   }
 
- // Log.traceln(command.c_str());
+  Log.traceln(command.c_str());
 
-  if (command.startsWith("TEST:1")) {
-    digitalWrite(LED_BUILTIN, HIGH);  // Sets the LAD On
-  } else if (command.startsWith("TEST:0")) {
-    digitalWrite(LED_BUILTIN, LOW);  // Sets the LAD Off
-  } else if (command.startsWith("RUMBLE")) {
+  if (command.startsWith("RUMBLE")) {
     playDualRumble();  //Perform controller rumble
   } else if (command.startsWith("LED:")) {
 
@@ -51,15 +41,14 @@ void ReceivedCommand(int howMany) {
     Log.traceln("COLOUR:%u,%u,%u", r, g, b);
 
     setColourLED(r, g, b);  //Turn on the colour LEDs
-
-  } 
+  }
   //else {
   //   requestDataFromMicrobit = command;
   //   Log.traceln("requestDataFromMicrobit:%s", command);
   // }
 }
 
-int whichDataToSend=0;
+int whichDataToSend = 0;
 
 void SendData() {
 
@@ -124,13 +113,13 @@ void SendData() {
           snprintf(txt, sizeof txt, "ACCEL,%i,%i,%i\n", myController->accelX(), myController->accelY(), myController->accelZ());
         }
 
-        Log.trace("sendData:%s",txt);
+        Log.trace("sendData:%s", txt);
         Wire.write(txt);
 
         whichDataToSend++;
-        
-        if (whichDataToSend > 6){
-          whichDataToSend=0;
+
+        if (whichDataToSend > 6) {
+          whichDataToSend = 0;
         }
       }
     }

@@ -9,7 +9,7 @@ void setup() {
   //LOG_LEVEL_VERBOSE
   //LOG_LEVEL_SILENT
   //LOG_LEVEL_TRACE
-  Log.begin( LOG_LEVEL_SILENT, &Serial);
+  Log.begin(LOG_LEVEL_SILENT, &Serial);
 
   setup_i2c();
 
