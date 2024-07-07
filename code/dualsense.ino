@@ -27,9 +27,23 @@ bool loop_dualsense() {
 
   // This call fetches all the controllers' data.
   bool dataUpdated = BP32.update();
+
   // if (dataUpdated) {
   //  processControllers();
   // }
+
+  // if (dataUpdated) {
+  //   for (auto myController : myControllers) {
+  //     if (myController && myController->isConnected()) {
+  //       if (myController->isGamepad()) {
+  //         //swap Y axis round so forward is postive
+  //           int32_t correctedaxisRY = myController->axisRY() * -1;
+  //         calculateAxisHour(myController->axisRX(), correctedaxisRY);
+  //       }
+  //     }
+  //   }
+  // }
+
   return dataUpdated;
 }
 

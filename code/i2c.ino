@@ -104,7 +104,9 @@ void SendData() {
         } else if (whichDataToSend == 2) {
           snprintf(txt, sizeof txt, "AXISL,%i,%i\n", myController->axisX(), myController->axisY());
         } else if (whichDataToSend == 3) {
-          snprintf(txt, sizeof txt, "AXISR,%i,%i\n", myController->axisRX(), myController->axisRY());
+          //swap Y axis round so forward is postive
+          int32_t correctedaxisRY = myController->axisRY() * -1;
+          snprintf(txt, sizeof txt, "AXISR,%i,%i,%i\n", myController->axisRX(), correctedaxisRY, calculateAxisHour(myController->axisRX(), correctedaxisRY));
         } else if (whichDataToSend == 4) {
           snprintf(txt, sizeof txt, "TRIGGERS,%i,%i\n", myController->brake(), myController->throttle());
         } else if (whichDataToSend == 5) {
