@@ -102,11 +102,13 @@ void SendData() {
                    myController->thumbR());
 
         } else if (whichDataToSend == 2) {
-          snprintf(txt, sizeof txt, "AXISL,%i,%i\n", myController->axisX(), myController->axisY());
+          //swap Y axis round so forward is postive
+          int32_t correctedaxisLY = myController->axisY() * -1;
+          snprintf(txt, sizeof txt, "AXISL,%i,%i,%i,%i\n", myController->axisX(), correctedaxisLY, calculateAxisHour(myController->axisX(), correctedaxisLY), calculateMagnitude(myController->axisX(), correctedaxisLY));
         } else if (whichDataToSend == 3) {
           //swap Y axis round so forward is postive
           int32_t correctedaxisRY = myController->axisRY() * -1;
-          snprintf(txt, sizeof txt, "AXISR,%i,%i,%i\n", myController->axisRX(), correctedaxisRY, calculateAxisHour(myController->axisRX(), correctedaxisRY));
+          snprintf(txt, sizeof txt, "AXISR,%i,%i,%i,%i\n", myController->axisRX(), correctedaxisRY, calculateAxisHour(myController->axisRX(), correctedaxisRY), calculateMagnitude(myController->axisRX(), correctedaxisRY));
         } else if (whichDataToSend == 4) {
           snprintf(txt, sizeof txt, "TRIGGERS,%i,%i\n", myController->brake(), myController->throttle());
         } else if (whichDataToSend == 5) {

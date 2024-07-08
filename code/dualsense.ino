@@ -38,7 +38,8 @@ bool loop_dualsense() {
   //       if (myController->isGamepad()) {
   //         //swap Y axis round so forward is postive
   //           int32_t correctedaxisRY = myController->axisRY() * -1;
-  //         calculateAxisHour(myController->axisRX(), correctedaxisRY);
+  //         //calculateAxisHour(myController->axisRX(), correctedaxisRY);
+  //         calculateMagnitude(myController->axisRX(), correctedaxisRY);
   //       }
   //     }
   //   }
@@ -59,6 +60,9 @@ void onConnectedController(ControllerPtr ctl) {
       ControllerProperties properties = ctl->getProperties();
       Log.traceln("Controller model: %s, VID=0x%04x, PID=0x%04x", ctl->getModelName().c_str(), properties.vendor_id, properties.product_id);
       myControllers[i] = ctl;
+
+//properties.btaddr
+
       foundEmptySlot = true;
       break;
     }
