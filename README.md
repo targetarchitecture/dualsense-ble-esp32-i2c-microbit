@@ -1,4 +1,4 @@
-# dualsense-ble-esp32-i2c-microbit
+# dualsense-bluetooth-esp32-i2c-microbit-v1
 This code is the ESP32 code of a project to allow the use of a PS5/DualSense controller with a BBC Microbit, using an ESP32 Wroom as an i2c slave and bluetooth receiver for the controller
 
 World's First: BBC microbit Control with DualSense!
